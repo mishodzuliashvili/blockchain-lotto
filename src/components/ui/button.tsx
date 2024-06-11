@@ -42,7 +42,7 @@ export interface ButtonProps
   asChild?: boolean;
   href?: string;
   customLink?: boolean;
-  afterPageAnimationOut?: () => void;
+  afterPageAnimationOut?: () => Promise<void>;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
