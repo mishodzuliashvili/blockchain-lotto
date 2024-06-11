@@ -24,7 +24,7 @@ export default function NavigationProvider({
     }
   }, [isPending]);
 
-  if (!account && pathname !== "/") {
+  if (!account && pathname !== "/" && typeof window !== "undefined") {
     window.location.href = "/";
     return;
   }
