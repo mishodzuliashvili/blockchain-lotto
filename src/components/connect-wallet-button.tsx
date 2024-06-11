@@ -31,7 +31,7 @@ export default function ConnectWalletButton() {
     <div className="relative">
       {connected ? (
         <Popover>
-          <PopoverTrigger>
+          <PopoverTrigger asChild>
             <Button>{formatAddress(account)}</Button>
           </PopoverTrigger>
           <PopoverContent className="mt-2 w-44 bg-gray-100 border rounded-md shadow-lg right-0 z-10 top-10">

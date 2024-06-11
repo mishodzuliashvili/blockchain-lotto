@@ -2,7 +2,7 @@
 import { createContext } from "react";
 
 const NavigationContext = createContext({
-  push: (url: string, afterPageAnimationOut?: () => void) => {},
+  push: (url: string, afterPageAnimationOut?: () => Promise<void>) => {},
   almightyPush: (url: string) => {},
 });
 

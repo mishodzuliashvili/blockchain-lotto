@@ -1,13 +1,33 @@
+"use client";
 import Image from "next/image";
 // import { AnimatedTooltip } from "./ui/animated-tooltip";
 import { Button } from "../ui/button";
 import COMPANY from "@/constants/company";
 import { AnimatedTooltip } from "../ui/animated-tooltip";
+import { useSDK } from "@metamask/sdk-react";
+import { useEffect } from "react";
+import useNavigation from "@/hooks/use-navigation";
 // import LoginWithGoogleButton from "./login-with-google-button";
 
 type HeroProps = {};
 
 export default function Hero({}: HeroProps) {
+  const { sdk, connected, account } = useSDK();
+  const { push } = useNavigation();
+  const connect = async () => {
+    if (account) {
+      push("/account");
+      return;
+    }
+    try {
+      push("/account", async () => {
+        await sdk?.connect();
+      });
+    } catch (err) {
+      console.warn(`No accounts found`, err);
+    }
+  };
+
   return (
     <div className="container">
       <div className="grid md:grid-cols-2 gap-4 md:gap-8 xl:gap-20 md:items-center">
@@ -44,7 +64,7 @@ export default function Hero({}: HeroProps) {
           </p>
 
           <div className="mt-7 grid gap-3 w-full sm:inline-flex">
-            <Button size="lg">
+            <Button size="lg" onClick={connect}>
               Get started{" "}
               <svg
                 className="flex-shrink-0 size-4"
@@ -61,9 +81,11 @@ export default function Hero({}: HeroProps) {
                 <path d="m9 18 6-6-6-6" />
               </svg>
             </Button>
-            <Button size="lg" variant="ghost">
-              Contact sales team
-            </Button>
+            <a href="mailto:shonka.demeloper@gmail.com">
+              <Button size="lg" variant="ghost">
+                Contact our team
+              </Button>
+            </a>
           </div>
           <div className="mt-10">
             <h2 className="font-medium">

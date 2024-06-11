@@ -4,6 +4,7 @@ import NavigationContext from "@/contexts/navigation-context";
 import { useEffect, useTransition } from "react";
 import gsap from "gsap";
 import { usePathname, useRouter } from "next/navigation";
+import { useSDK } from "@metamask/sdk-react";
 
 type NavigationProviderProps = {
   children?: React.ReactNode;
@@ -15,12 +16,18 @@ export default function NavigationProvider({
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
   const pathname = usePathname();
+  const { sdk, connected, account } = useSDK();
 
   useEffect(() => {
     if (!isPending) {
       inAnimation();
     }
   }, [isPending]);
+
+  if (!account && pathname !== "/") {
+    window.location.href = "/";
+    return;
+  }
 
   return (
     <NavigationContext.Provider
@@ -32,16 +39,23 @@ export default function NavigationProvider({
             window.location.href = `/${myUrl}`;
           });
         },
-        push: (url: string, afterPageAnimationOut?: () => void) => {
+        push: (url: string, afterPageAnimationOut?: () => Promise<void>) => {
           let myUrl = url.replace(/^\/+/, "");
           let myPathname = pathname.replace(/^\/+/, "");
           if (myPathname === myUrl) return;
 
-          outAnimation().then(() => {
-            afterPageAnimationOut && afterPageAnimationOut();
-            startTransition(() => {
-              router.push(`/${myUrl}`);
-            });
+          outAnimation().then(async () => {
+            try {
+              if (afterPageAnimationOut) {
+                await afterPageAnimationOut();
+              }
+              startTransition(() => {
+                router.push(`/${myUrl}`);
+              });
+            } catch (error) {
+              console.error(error);
+              startTransition(() => {});
+            }
           });
         },
       }}
